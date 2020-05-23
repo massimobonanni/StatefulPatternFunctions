@@ -90,5 +90,36 @@ namespace StatefulPatternFunctions.CertificationManager
 
             return new OkObjectResult($"Certification {certification.Id} update for profile {profileId}");
         }
+
+        [FunctionName("GetCertificationProfiles")]
+        public static async Task<IActionResult> GetProfiles(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles")] HttpRequest req,
+            [DurableClient] IDurableEntityClient client)
+        {
+            var result = new List<CertificationProfileGetModel>();
+
+            var query = new EntityQuery()
+            {
+                PageSize = 100,
+                FetchState = true
+            };
+
+            do
+            {
+                var profiles = await client.ListEntitiesAsync(query, default);
+
+                foreach (var profile in profiles.Entities)
+                {
+
+                    var profileModel = profile.State.ToObject<CertificationProfileGetModel>();
+                    profileModel.Id = Guid.Parse(profile.EntityId.EntityKey);
+                    result.Add(profileModel);
+                }
+
+                query.ContinuationToken = profiles.ContinuationToken;
+            } while (query.ContinuationToken != null && query.ContinuationToken != "bnVsbA==");
+
+            return new OkObjectResult(result);
+        }
     }
 }

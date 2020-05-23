@@ -32,7 +32,7 @@ namespace StatefulPatternFunctions.CertificationManager
         [JsonProperty("isInitialized")]
         public bool IsInitialized { get; set; }
 
-        [JsonProperty("products")]
+        [JsonProperty("certifications")]
         public List<Certification> Certifications { get; set; } = new List<Certification>();
 
         public bool InitializeProfile(CertificationProfileInitializeModel profile)

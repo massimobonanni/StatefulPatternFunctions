@@ -12,9 +12,9 @@ namespace StatefulPatternFunctions.CertificationManager
             {
                 CredentialId = model.CredentialId,
                 CredentialUrl = model.CredentialUrl,
-                ExpirationDate = model.ExpirationDate,
+                ExpirationDate = model.ExpirationDate?.Date,
                 Id = model.Id,
-                IssueDate = model.IssueDate,
+                IssueDate = model.IssueDate.HasValue ? model.IssueDate.Value : DateTime.Today,
                 IssuingOrganization = model.IssuingOrganization,
                 Name = model.Name
             };
