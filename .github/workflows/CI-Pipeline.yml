@@ -29,4 +29,4 @@ jobs:
         # Artifact name
         name: DemoFunctions
         # A file, directory or wildcard pattern that describes what to upload
-        path: functions\*
+        path: StatefulPatternFunctions/StatefulPatternFunctions/**/*
