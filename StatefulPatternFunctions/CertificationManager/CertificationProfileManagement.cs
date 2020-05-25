@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dynamitey;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,7 +98,7 @@ namespace StatefulPatternFunctions.CertificationManager
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles")] HttpRequest req,
             [DurableClient] IDurableEntityClient client)
         {
-            var result = new List<CertificationProfileGetModel>();
+            var result = new List<CertificationProfilesGetModel>();
 
             var query = new EntityQuery()
             {
@@ -111,7 +113,7 @@ namespace StatefulPatternFunctions.CertificationManager
                 foreach (var profile in profiles.Entities)
                 {
 
-                    var profileModel = profile.State.ToObject<CertificationProfileGetModel>();
+                    var profileModel = profile.State.ToObject<CertificationProfilesGetModel>();
                     profileModel.Id = Guid.Parse(profile.EntityId.EntityKey);
                     result.Add(profileModel);
                 }
@@ -120,6 +122,28 @@ namespace StatefulPatternFunctions.CertificationManager
             } while (query.ContinuationToken != null && query.ContinuationToken != "bnVsbA==");
 
             return new OkObjectResult(result);
+        }
+
+        [FunctionName("GetCertificationProfile")]
+        public static async Task<IActionResult> GetProfile(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles/{profileId}")] HttpRequest req,
+            string profileId,
+            [DurableClient] IDurableEntityClient client)
+        {
+            var entityId = new EntityId(nameof(CertificationProfileEntity), profileId);
+
+            var entity = await client.ReadEntityStateAsync<JObject>(entityId);
+            if (entity.EntityExists)
+            {
+                var profile = entity.EntityState.ToObject<CertificationProfileGetModel>();
+                profile.Id = Guid.Parse(profileId);
+
+                return new OkObjectResult(profile);
+            }
+            else
+            {
+                return new NotFoundObjectResult(profileId);
+            }
         }
     }
 }
