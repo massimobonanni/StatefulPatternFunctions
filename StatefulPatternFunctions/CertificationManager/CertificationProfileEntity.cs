@@ -2,6 +2,7 @@
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using StatefulPatternFunctions.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

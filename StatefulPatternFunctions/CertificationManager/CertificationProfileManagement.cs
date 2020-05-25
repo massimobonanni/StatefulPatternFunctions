@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StatefulPatternFunctions.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
