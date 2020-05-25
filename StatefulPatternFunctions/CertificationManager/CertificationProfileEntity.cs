@@ -33,12 +33,15 @@ namespace StatefulPatternFunctions.CertificationManager
         [JsonProperty("isInitialized")]
         public bool IsInitialized { get; set; }
 
+        [JsonProperty("isDeleted")]
+        public bool IsDeleted { get; set; } = false;
+
         [JsonProperty("certifications")]
         public List<Certification> Certifications { get; set; } = new List<Certification>();
 
         public bool InitializeProfile(CertificationProfileInitializeModel profile)
         {
-            if (IsInitialized)
+            if (IsInitialized || IsDeleted)
                 return false;
 
             this.IsInitialized = true;
@@ -49,9 +52,22 @@ namespace StatefulPatternFunctions.CertificationManager
             return true;
         }
 
+        public bool DeleteProfile()
+        {
+            this.IsInitialized = false;
+            this.LastName = null;
+            this.FirstName = null;
+            this.Email = null;
+            this.Certifications.Clear();
+
+            this.IsDeleted = true;
+
+            return true;
+        }
+
         public bool UpdateProfile(CertificationProfileInitializeModel profile)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || IsDeleted)
                 return false;
             this.LastName = profile.LastName;
             this.FirstName = profile.FirstName;
@@ -62,7 +78,7 @@ namespace StatefulPatternFunctions.CertificationManager
 
         public bool UpsertCertification(CertificationUpsertModel certification)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || IsDeleted)
                 return false;
 
             var innerCertification = Certifications.FirstOrDefault(p => p.Id == certification.Id);
@@ -77,7 +93,7 @@ namespace StatefulPatternFunctions.CertificationManager
 
         public bool RemoveCertification(Guid certificationId)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || IsDeleted)
                 return false;
 
             var innerCertification = Certifications.FirstOrDefault(p => p.Id == certificationId);
@@ -91,6 +107,9 @@ namespace StatefulPatternFunctions.CertificationManager
 
         public bool CleanCertifications()
         {
+            if (!IsInitialized || IsDeleted)
+                return false;
+
             Certifications.Clear();
             return true;
         }

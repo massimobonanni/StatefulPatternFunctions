@@ -20,20 +20,19 @@ namespace StatefulPatternFunctions.CertificationManager
     {
         [FunctionName("InitializeCertificationProfile")]
         public async Task<IActionResult> InitializeProfile(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles/{profileId}")] HttpRequest req,
-            Guid profileId,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles")] HttpRequest req,
             [DurableClient] IDurableEntityClient client,
             ILogger logger)
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var profile = JsonConvert.DeserializeObject<CertificationProfileInitializeModel>(requestBody);
 
-            var entityId = new EntityId(nameof(CertificationProfileEntity), profileId.ToString());
+            var entityId = new EntityId(nameof(CertificationProfileEntity), profile.Id.ToString());
 
             await client.SignalEntityAsync(entityId,
                    nameof(CertificationProfileEntity.InitializeProfile), profile);
 
-            return new OkObjectResult($"Profile {profileId} initialized");
+            return new OkObjectResult($"Profile {profile.Id} initialized");
         }
 
         [FunctionName("UpdateCertificationProfile")]
@@ -50,6 +49,21 @@ namespace StatefulPatternFunctions.CertificationManager
 
             await client.SignalEntityAsync(entityId,
                    nameof(CertificationProfileEntity.UpdateProfile), profile);
+
+            return new OkObjectResult($"Profile {profileId} updated");
+        }
+
+        [FunctionName("DeleteCertificationProfile")]
+        public async Task<IActionResult> DeleteProfile(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "profiles/{profileId}")] HttpRequest req,
+            Guid profileId,
+            [DurableClient] IDurableEntityClient client,
+            ILogger logger)
+        {
+            var entityId = new EntityId(nameof(CertificationProfileEntity), profileId.ToString());
+
+            await client.SignalEntityAsync(entityId,
+                   nameof(CertificationProfileEntity.DeleteProfile), null);
 
             return new OkObjectResult($"Profile {profileId} updated");
         }
@@ -113,10 +127,12 @@ namespace StatefulPatternFunctions.CertificationManager
 
                 foreach (var profile in profiles.Entities)
                 {
-
                     var profileModel = profile.State.ToObject<CertificationProfilesGetModel>();
-                    profileModel.Id = Guid.Parse(profile.EntityId.EntityKey);
-                    result.Add(profileModel);
+                    if (!profileModel.IsDeleted)
+                    {
+                        profileModel.Id = Guid.Parse(profile.EntityId.EntityKey);
+                        result.Add(profileModel);
+                    }
                 }
 
                 query.ContinuationToken = profiles.ContinuationToken;
@@ -137,14 +153,13 @@ namespace StatefulPatternFunctions.CertificationManager
             if (entity.EntityExists)
             {
                 var profile = entity.EntityState.ToObject<CertificationProfileGetModel>();
-                profile.Id = Guid.Parse(profileId);
-
-                return new OkObjectResult(profile);
+                if (!profile.IsDeleted)
+                {
+                    profile.Id = Guid.Parse(profileId);
+                    return new OkObjectResult(profile);
+                }
             }
-            else
-            {
-                return new NotFoundObjectResult(profileId);
-            }
+            return new NotFoundObjectResult(profileId);
         }
     }
 }

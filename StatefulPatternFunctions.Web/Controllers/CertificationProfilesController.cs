@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StatefulPatternFunctions.Core.Interfaces;
+using StatefulPatternFunctions.Core.Models;
 using StatefulPatternFunctions.Web.Models.CertificationProfiles;
 
 namespace StatefulPatternFunctions.Web.Controllers
@@ -39,76 +40,126 @@ namespace StatefulPatternFunctions.Web.Controllers
         public async Task<ActionResult> Details(Guid id)
         {
             var model = new DetailModel();
-            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(id,default);
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(id, default);
             if (profile == null)
                 return RedirectToAction(nameof(Index));
 
-            model.Profile  = profile;
+            model.Profile = profile;
 
             return View(model);
         }
 
-        // GET: CertificationProfilesController/Create
         public ActionResult Create()
         {
+            var model = new CreateModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var profile = new CertificationProfileInitializeModel()
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email
+                    };
+                    var result = await this._certificationProfilesProvider.AddCertificationProfileAsync(profile, default);
+                    if (result)
+                        return RedirectToAction(nameof(Index));
+
+                    ModelState.AddModelError(string.Empty, "Error during inserting employee");
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, "Error during inserting employee");
+                }
+            }
             return View();
         }
 
-        // POST: CertificationProfilesController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Edit(Guid id)
         {
-            try
-            {
+            var model = new EditModel();
+
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(id, default);
+            if (profile == null)
                 return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+
+            model.Id = profile.Id;
+            model.Email = profile.Email;
+            model.FirstName = profile.FirstName;
+            model.LastName = profile.LastName;
+
+            return View(model);
         }
 
-        // GET: CertificationProfilesController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(EditModel model)
         {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var profile = new CertificationProfileUpdateModel()
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email
+                    };
+                    var result = await this._certificationProfilesProvider.UpdateCertificationProfileAsync(
+                        model.Id, profile, default);
+                    if (result)
+                        return RedirectToAction(nameof(Index));
+
+                    ModelState.AddModelError(string.Empty, "Error during updating employee");
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, "Error during updating employee");
+                }
+            }
             return View();
         }
 
-        // POST: CertificationProfilesController/Edit/5
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var model = new DeleteModel();
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(id, default);
+            if (profile == null)
+                return RedirectToAction(nameof(Index));
+
+            model.Id = profile.Id;
+            model.Email = profile.Email;
+            model.FirstName = profile.FirstName;
+            model.LastName = profile.LastName;
+
+            return View(model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(DeleteModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var result = await this._certificationProfilesProvider.DeleteCertificationProfileAsync(model.Id, default);
+                if (result)
+                    return RedirectToAction(nameof(Index));
+
+                ModelState.AddModelError(string.Empty, "Error during deleting employee");
             }
             catch
             {
-                return View();
+                ModelState.AddModelError(string.Empty, "Error during deleting employee");
             }
-        }
-
-        // GET: CertificationProfilesController/Delete/5
-        public ActionResult Delete(int id)
-        {
             return View();
-        }
-
-        // POST: CertificationProfilesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace StatefulPatternFunctions.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
-            services.AddHttpClient<ICertificationProfilesProvider, CertificatioProfilesRestProvider>();
+            services.AddHttpClient<ICertificationProfilesProvider, CertificationProfilesRestProvider>();
 
             services.AddControllersWithViews();
         }

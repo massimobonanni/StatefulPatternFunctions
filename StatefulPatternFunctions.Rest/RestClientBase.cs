@@ -12,6 +12,7 @@ namespace StatefulPatternFunctions.Rest
         protected readonly IConfiguration _configuration;
 
         protected string _baseUrl;
+        protected string _apiKey;
 
         public RestClientBase(HttpClient httpClient, IConfiguration configuration)
         {
@@ -32,16 +33,38 @@ namespace StatefulPatternFunctions.Rest
                 throw new Exception("Configuration is not valid. Add 'BaseUrl' value");
             if (this._baseUrl.EndsWith("/"))
                 this._baseUrl = this._baseUrl.Remove(this._baseUrl.Length - 1);
+
+            this._apiKey = section["ApiKey"];
         }
 
         protected virtual Uri CreateAPIUri(string apiEndpoint)
         {
-            if (string.IsNullOrWhiteSpace(apiEndpoint))
-                return new Uri($"{this._baseUrl}");
+            string url;
 
-            if (apiEndpoint.StartsWith("/"))
-                apiEndpoint = apiEndpoint.Remove(0, 1);
-            return new Uri($"{this._baseUrl}/{apiEndpoint}");
+            if (string.IsNullOrWhiteSpace(apiEndpoint))
+            {
+                url = $"{this._baseUrl}";
+            }
+            else
+            {
+                if (apiEndpoint.StartsWith("/"))
+                    apiEndpoint = apiEndpoint.Remove(0, 1);
+                url = $"{this._baseUrl}/{apiEndpoint}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(this._apiKey))
+            {
+                if (!url.Contains("?"))
+                {
+                    url = $"{url}?code={this._apiKey}";
+                }
+                else
+                {
+                    url = $"{url}&code={this._apiKey}";
+                }
+            }
+            
+            return new Uri(url);
         }
 
         protected virtual HttpClient CreateHttpClient(string apiEndpoint)

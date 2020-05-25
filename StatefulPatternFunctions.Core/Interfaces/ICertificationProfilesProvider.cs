@@ -12,5 +12,12 @@ namespace StatefulPatternFunctions.Core.Interfaces
         Task<IEnumerable<CertificationProfilesGetModel>> GetCertificationProfilesAsync(CancellationToken token);
 
         Task<CertificationProfileGetModel> GetCertificationProfileAsync(Guid profileId, CancellationToken token);
+
+        Task<bool> AddCertificationProfileAsync(CertificationProfileInitializeModel profile, CancellationToken token);
+
+        Task<bool> UpdateCertificationProfileAsync(Guid id, CertificationProfileUpdateModel profile, CancellationToken token);
+
+        Task<bool> DeleteCertificationProfileAsync(Guid id, CancellationToken token);
+
     }
 }
