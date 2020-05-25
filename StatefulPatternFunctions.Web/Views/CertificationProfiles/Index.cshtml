@@ -1,0 +1,35 @@
+﻿@model StatefulPatternFunctions.Web.Models.CertificationProfiles.IndexModel
+
+@{
+    ViewData["Title"] = "Certification Profiles";
+}
+
+<h1>Certification Profiles</h1>
+
+<p>
+    <a asp-action="Create">Create New Profile</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Email</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Profiles) {
+        <tr>
+            <td>@item.LastName</td>
+            <td>@item.FirstName</td>
+            <td>@item.Email</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

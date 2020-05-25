@@ -13,7 +13,7 @@ namespace StatefulPatternFunctions.Rest
 {
     public class CertificatioProfilesRestProvider : RestClientBase, ICertificationProfilesProvider
     {
-        public CertificatioProfilesRestProvider(HttpClient httpClient, 
+        public CertificatioProfilesRestProvider(HttpClient httpClient,
             IConfiguration configuration) : base(httpClient, configuration)
         {
         }
@@ -21,11 +21,11 @@ namespace StatefulPatternFunctions.Rest
         protected override HttpClient CreateHttpClient(string apiEndpoint)
         {
             if (string.IsNullOrEmpty(apiEndpoint))
-                return base.CreateHttpClient($"/profiles");
+                return base.CreateHttpClient($"/api/profiles");
 
             if (apiEndpoint.StartsWith("/"))
                 apiEndpoint = apiEndpoint.Remove(0, 1);
-            return base.CreateHttpClient($"/profiles/{apiEndpoint}");
+            return base.CreateHttpClient($"/api/profiles/{apiEndpoint}");
         }
 
         public async Task<IEnumerable<CertificationProfilesGetModel>> GetCertificationProfilesAsync(CancellationToken token)
@@ -36,15 +36,35 @@ namespace StatefulPatternFunctions.Rest
             {
                 var content = await response.Content.ReadAsStringAsync();
 
-                var employees = JsonSerializer.Deserialize<List<CertificationProfilesGetModel>>(content,
+                var profiles = JsonSerializer.Deserialize<List<CertificationProfilesGetModel>>(content,
                     new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true,
                     });
 
-                return employees;
+                return profiles;
             }
             return null;
+        }
+
+        public async Task<CertificationProfileGetModel> GetCertificationProfileAsync(Guid profileId, CancellationToken token)
+        {
+            var client = CreateHttpClient($"{profileId}");
+            var response = await client.GetAsync("");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+                var profile = JsonSerializer.Deserialize<CertificationProfileGetModel>(content,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    });
+
+                return profile;
+            }
+            return null;
+
         }
     }
 }

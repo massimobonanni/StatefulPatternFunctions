@@ -1,0 +1,72 @@
+﻿@model StatefulPatternFunctions.Web.Models.CertificationProfiles.DetailModel
+
+@{
+    ViewData["Title"] = "Profile Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Profile details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Profile.FirstName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Profile.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Profile.LastName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Profile.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Profile.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Profile.Email)
+        </dd>
+    </dl>
+    <h3 class="offset-sm-1 col-sm-10">Certifications</h3>
+    <table class="table offset-sm-1 col-sm-10">
+        <thead>
+            <tr>
+                <th>Certification</th>
+                <th>Organization</th>
+                <th>Issue Date</th>
+                <th>Expiration Date</th>
+                <th>Url</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Profile.Certifications)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.IssuingOrganization</td>
+                    <td>@item.IssueDate</td>
+                    <td>@item.ExpirationDate</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.CredentialUrl))
+                        {
+                            <a href="@item.CredentialUrl">Url</a>
+                        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", "Certifications", new { profileId = Model.Profile.Id, certificationId = item.Id }) |
+                        @Html.ActionLink("Delete", "Delete", "Certifications", new { profileId = Model.Profile.Id, certificationId = item.Id })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.ActionLink("Add New Certification", "Create", "Certifications", new { profileId = Model.Profile.Id }, new { @class="offset-sm-1 col-sm-10"})
+</div>
+<br>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Profile.Id }) |
+    <a asp-action="Index">Back to List</a>
+</div>

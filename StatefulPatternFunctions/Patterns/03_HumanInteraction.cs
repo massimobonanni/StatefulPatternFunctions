@@ -11,7 +11,7 @@ namespace StatefulPatternFunctions.Patterns
     public static class HumanInteraction
     {
         [FunctionName("HumanInteractionOrchestrator")]
-        public static async Task Run([OrchestrationTrigger] IDurableOrchestrationContext context)
+        public static async Task RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             await context.CallActivityAsync("RequestApproval", null);
             using (var timeoutCts = new CancellationTokenSource())
@@ -34,10 +34,10 @@ namespace StatefulPatternFunctions.Patterns
         }
 
         [FunctionName("RaiseEventToOrchestration")]
-        public static async Task Run([HttpTrigger] string instanceId,
+        public static async Task RunClient([HttpTrigger] string instanceId,
             [DurableClient] IDurableOrchestrationClient client)
         {
-            bool isApproved = true;
+            var isApproved = true;
             await client.RaiseEventAsync(instanceId, "ApprovalEvent", isApproved);
         }
     }
