@@ -19,5 +19,9 @@ namespace StatefulPatternFunctions.Core.Interfaces
 
         Task<bool> DeleteCertificationProfileAsync(Guid id, CancellationToken token);
 
+        Task<bool> AddCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token);
+
+        Task<bool> UpdateCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token);
+
     }
 }

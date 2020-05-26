@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StatefulPatternFunctions.Core.Interfaces;
+using StatefulPatternFunctions.Core.Models;
 using StatefulPatternFunctions.Web.Models.Certifications;
 
 namespace StatefulPatternFunctions.Web.Controllers
@@ -52,46 +53,116 @@ namespace StatefulPatternFunctions.Web.Controllers
             return View(model);
         }
 
-        // GET: CertificationsController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create(Guid profileId)
         {
-            return View();
+            var model = new CreateModel();
+
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
+            if (profile == null)
+                return RedirectToAction(nameof(Index));
+            
+            model.ProfileId = profile.Id;
+            model.LastName = profile.LastName;
+            model.FirstName = profile.FirstName;
+            model.Email = profile.Email;
+            
+            return View(model);
         }
 
-        // POST: CertificationsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(CreateModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var certification = new CertificationUpsertModel()
+                    {
+                        CredentialId = model.CredentialId,
+                        CredentialUrl = model.CredentialUrl,
+                        ExpirationDate = model.ExpirationDate,
+                        Id = Guid.NewGuid(),
+                        IssueDate = model.IssueDate,
+                        IssuingOrganization = model.IssuingOrganization,
+                        Name = model.CertificationName
+                    };
+
+                    var result = await this._certificationProfilesProvider.AddCertificationAsync(model.ProfileId,
+                        certification, default);
+                    if (result)
+                        return RedirectToAction(nameof(Index));
+
+                    ModelState.AddModelError(string.Empty, "Error during inserting certification");
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, "Error during inserting certification");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
-        // GET: CertificationsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(Guid profileId, Guid certificationId)
         {
-            return View();
+            var model = new EditModel();
+
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
+            if (profile == null)
+                return RedirectToAction(nameof(Index));
+            var certification = profile.Certifications.FirstOrDefault(c => c.Id == certificationId);
+            if (certification == null)
+                return RedirectToAction(nameof(Index));
+
+            model.CertificationId = certification.Id;
+            model.CertificationName = certification.Name;
+            model.CredentialId = certification.CredentialId;
+            model.CredentialUrl = certification.CredentialUrl;
+            model.ExpirationDate = certification.ExpirationDate;
+            model.IssueDate = certification.IssueDate;
+            model.IssuingOrganization = certification.IssuingOrganization;
+            model.ProfileId = profile.Id;
+            model.LastName = profile.LastName;
+            model.FirstName = profile.FirstName;
+            model.Email = profile.Email;
+
+            return View(model);
         }
 
         // POST: CertificationsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(EditModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var certification = new CertificationUpsertModel()
+                    {
+                        CredentialId = model.CredentialId,
+                        CredentialUrl = model.CredentialUrl,
+                        ExpirationDate = model.ExpirationDate,
+                        Id = model.CertificationId,
+                        IssueDate = model.IssueDate,
+                        IssuingOrganization = model.IssuingOrganization,
+                        Name = model.CertificationName
+                    };
+
+                    var result = await this._certificationProfilesProvider.UpdateCertificationAsync(model.ProfileId,
+                        certification, default);
+
+                    if (result)
+                        return RedirectToAction(nameof(Index));
+
+                    ModelState.AddModelError(string.Empty, "Error during updating certification");
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, "Error during updating certification");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
         // GET: CertificationsController/Delete/5

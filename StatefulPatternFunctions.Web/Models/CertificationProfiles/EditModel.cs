@@ -17,6 +17,7 @@ namespace StatefulPatternFunctions.Web.Models.CertificationProfiles
         [Required]
         public string LastName { get; set; }
 
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
     }
 }

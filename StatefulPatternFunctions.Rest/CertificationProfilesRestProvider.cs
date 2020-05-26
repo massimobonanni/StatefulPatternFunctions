@@ -128,5 +128,49 @@ namespace StatefulPatternFunctions.Rest
                 return response.IsSuccessStatusCode;
             }
         }
+
+        public async Task<bool> AddCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token)
+        {
+            if (certification == null)
+                throw new ArgumentNullException(nameof(certification));
+
+            using (var client = CreateHttpClient($"{profileId}/certifications"))
+            {
+                certification.Id = Guid.NewGuid();
+
+                var profileJson = JsonSerializer.Serialize(certification,
+                      new JsonSerializerOptions
+                      {
+                          PropertyNameCaseInsensitive = true,
+                      });
+
+                var postContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("", postContent, token);
+
+                return response.IsSuccessStatusCode;
+            }
+        }
+
+        public async Task<bool> UpdateCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token)
+        {
+            if (certification == null)
+                throw new ArgumentNullException(nameof(certification));
+
+            using (var client = CreateHttpClient($"{profileId}/certifications/{certification.Id}"))
+            {
+                var profileJson = JsonSerializer.Serialize(certification,
+                      new JsonSerializerOptions
+                      {
+                          PropertyNameCaseInsensitive = true,
+                      });
+
+                var putContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+
+                var response = await client.PutAsync("", putContent, token);
+
+                return response.IsSuccessStatusCode;
+            }
+        }
     }
 }

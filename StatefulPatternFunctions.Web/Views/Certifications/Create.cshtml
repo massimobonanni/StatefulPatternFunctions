@@ -1,0 +1,82 @@
+﻿@model StatefulPatternFunctions.Web.Models.Certifications.CreateModel
+
+@{
+    ViewData["Title"] = "Add certification";
+}
+
+<h1>Add certification</h1>
+
+<hr />
+<h4>Profile</h4>
+<hr />
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.FirstName)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.FirstName)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.LastName)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.LastName)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Email)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Email)
+    </dd>
+</dl>
+<h4>Certification</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <input asp-for="ProfileId" hidden />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CertificationName" class="control-label"></label>
+                <input asp-for="CertificationName" class="form-control" />
+                <span asp-validation-for="CertificationName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IssuingOrganization" class="control-label"></label>
+                <input asp-for="IssuingOrganization" class="form-control" />
+                <span asp-validation-for="IssuingOrganization" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CredentialUrl" class="control-label"></label>
+                <input asp-for="CredentialUrl" class="form-control" />
+                <span asp-validation-for="CredentialUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CredentialId" class="control-label"></label>
+                <input asp-for="CredentialId" class="form-control" />
+                <span asp-validation-for="CredentialId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IssueDate" class="control-label"></label>
+                <input asp-for="IssueDate" type="date" class="form-control" />
+                <span asp-validation-for="IssueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpirationDate" class="control-label"></label>
+                <input asp-for="ExpirationDate" type="date" class="form-control" />
+                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Details", "CertificationProfiles", new { id = Model.ProfileId })
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

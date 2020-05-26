@@ -70,15 +70,13 @@ namespace StatefulPatternFunctions.CertificationManager
 
         [FunctionName("AddCertification")]
         public async Task<IActionResult> AddCertification(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles/{profileId}/certifications/{certificationId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles/{profileId}/certifications")] HttpRequest req,
             Guid profileId,
-            Guid certificationId,
             [DurableClient] IDurableEntityClient client,
             ILogger logger)
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var certification = JsonConvert.DeserializeObject<CertificationUpsertModel>(requestBody);
-            certification.Id = certificationId;
 
             var entityId = new EntityId(nameof(CertificationProfileEntity), profileId.ToString());
 

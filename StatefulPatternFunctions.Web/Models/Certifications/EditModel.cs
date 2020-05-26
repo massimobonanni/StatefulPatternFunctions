@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StatefulPatternFunctions.Web.Models.Certifications
 {
-    public class DetailModel
+    public class EditModel
     {
 
         public Guid ProfileId { get; set; }
@@ -19,18 +19,24 @@ namespace StatefulPatternFunctions.Web.Models.Certifications
 
         public Guid CertificationId { get; set; }
 
+        [Required]
         public string CertificationName { get; set; }
 
+        [Required]
         public string IssuingOrganization { get; set; }
 
+        [DataType(DataType.Url)]
         public string CredentialUrl { get; set; }
 
         public string CredentialId { get; set; }
 
+        [Required]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime IssueDate { get; set; } 
+        [DataType(DataType.Date)]
+        public DateTime IssueDate { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [DataType(DataType.Date)] 
         public DateTime? ExpirationDate { get; set; }
     }
 }

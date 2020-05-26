@@ -73,11 +73,11 @@ namespace StatefulPatternFunctions.Web.Controllers
                     if (result)
                         return RedirectToAction(nameof(Index));
 
-                    ModelState.AddModelError(string.Empty, "Error during inserting employee");
+                    ModelState.AddModelError(string.Empty, "Error during inserting profile");
                 }
                 catch
                 {
-                    ModelState.AddModelError(string.Empty, "Error during inserting employee");
+                    ModelState.AddModelError(string.Empty, "Error during inserting profile");
                 }
             }
             return View();
@@ -118,11 +118,11 @@ namespace StatefulPatternFunctions.Web.Controllers
                     if (result)
                         return RedirectToAction(nameof(Index));
 
-                    ModelState.AddModelError(string.Empty, "Error during updating employee");
+                    ModelState.AddModelError(string.Empty, "Error during updating profile");
                 }
                 catch
                 {
-                    ModelState.AddModelError(string.Empty, "Error during updating employee");
+                    ModelState.AddModelError(string.Empty, "Error during updating profile");
                 }
             }
             return View();
@@ -153,11 +153,11 @@ namespace StatefulPatternFunctions.Web.Controllers
                 if (result)
                     return RedirectToAction(nameof(Index));
 
-                ModelState.AddModelError(string.Empty, "Error during deleting employee");
+                ModelState.AddModelError(string.Empty, "Error during deleting profile");
             }
             catch
             {
-                ModelState.AddModelError(string.Empty, "Error during deleting employee");
+                ModelState.AddModelError(string.Empty, "Error during deleting profile");
             }
             return View();
         }

@@ -14,7 +14,7 @@ namespace StatefulPatternFunctions.Patterns
     public static class FunctionChaining
     {
         [FunctionName("FunctionsChainingOrchestrator")]
-        public static async Task<int> Run([OrchestrationTrigger] IDurableOrchestrationContext context)
+        public static async Task<int> RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace StatefulPatternFunctions.Patterns
         }
 
         [FunctionName("F1")]
-        public static int F1([ActivityTrigger] int value)
+        public static int F1([ActivityTrigger] object value)
         {
             return 42;
         }
@@ -48,7 +48,7 @@ namespace StatefulPatternFunctions.Patterns
         }
 
         [FunctionName("FunctionsChainingClient")]
-        public static async Task<HttpResponseMessage> HttpStart(
+        public static async Task<HttpResponseMessage> RunClient(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestMessage req,
             [DurableClient] IDurableOrchestrationClient starter,
             ILogger log)
