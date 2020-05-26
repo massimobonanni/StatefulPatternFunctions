@@ -33,10 +33,10 @@ namespace StatefulPatternFunctions.Web.Controllers
             var model = new DetailModel();
             var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
             if (profile == null)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","CertificationProfiles");
             var certification = profile.Certifications.FirstOrDefault(c => c.Id == certificationId);
             if (certification == null)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "CertificationProfiles", new { id = profileId });
 
             model.CertificationId = certification.Id;
             model.CertificationName = certification.Name;
@@ -59,13 +59,13 @@ namespace StatefulPatternFunctions.Web.Controllers
 
             var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
             if (profile == null)
-                return RedirectToAction(nameof(Index));
-            
+                return RedirectToAction("Details", "CertificationProfiles", new { id = profileId });
+
             model.ProfileId = profile.Id;
             model.LastName = profile.LastName;
             model.FirstName = profile.FirstName;
             model.Email = profile.Email;
-            
+
             return View(model);
         }
 
@@ -91,7 +91,7 @@ namespace StatefulPatternFunctions.Web.Controllers
                     var result = await this._certificationProfilesProvider.AddCertificationAsync(model.ProfileId,
                         certification, default);
                     if (result)
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Details", "CertificationProfiles", new { id = model.ProfileId });
 
                     ModelState.AddModelError(string.Empty, "Error during inserting certification");
                 }
@@ -109,10 +109,10 @@ namespace StatefulPatternFunctions.Web.Controllers
 
             var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
             if (profile == null)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "CertificationProfiles");
             var certification = profile.Certifications.FirstOrDefault(c => c.Id == certificationId);
             if (certification == null)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "CertificationProfiles", new { id = profileId });
 
             model.CertificationId = certification.Id;
             model.CertificationName = certification.Name;
@@ -153,7 +153,7 @@ namespace StatefulPatternFunctions.Web.Controllers
                         certification, default);
 
                     if (result)
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Details", "CertificationProfiles", new { id = model.ProfileId });
 
                     ModelState.AddModelError(string.Empty, "Error during updating certification");
                 }
