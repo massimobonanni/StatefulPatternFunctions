@@ -172,5 +172,15 @@ namespace StatefulPatternFunctions.Rest
                 return response.IsSuccessStatusCode;
             }
         }
+
+        public async Task<bool> DeleteCertificationAsync(Guid profileId, Guid certificationId, CancellationToken token)
+        {
+            using (var client = CreateHttpClient($"{profileId}/certifications/{certificationId}"))
+            {
+                var response = await client.DeleteAsync("", token);
+
+                return response.IsSuccessStatusCode;
+            }
+        }
     }
 }

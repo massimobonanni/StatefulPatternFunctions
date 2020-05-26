@@ -33,7 +33,7 @@ namespace StatefulPatternFunctions.Web.Controllers
             var model = new DetailModel();
             var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
             if (profile == null)
-                return RedirectToAction("Index","CertificationProfiles");
+                return RedirectToAction("Index", "CertificationProfiles");
             var certification = profile.Certifications.FirstOrDefault(c => c.Id == certificationId);
             if (certification == null)
                 return RedirectToAction("Details", "CertificationProfiles", new { id = profileId });
@@ -165,25 +165,52 @@ namespace StatefulPatternFunctions.Web.Controllers
             return View();
         }
 
-        // GET: CertificationsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(Guid profileId, Guid certificationId)
         {
-            return View();
+            var model = new DeleteModel();
+
+            var profile = await this._certificationProfilesProvider.GetCertificationProfileAsync(profileId, default);
+            if (profile == null)
+                return RedirectToAction("Index", "CertificationProfiles");
+            var certification = profile.Certifications.FirstOrDefault(c => c.Id == certificationId);
+            if (certification == null)
+                return RedirectToAction("Details", "CertificationProfiles", new { id = profileId });
+
+            model.CertificationId = certification.Id;
+            model.CertificationName = certification.Name;
+            model.CredentialId = certification.CredentialId;
+            model.CredentialUrl = certification.CredentialUrl;
+            model.ExpirationDate = certification.ExpirationDate;
+            model.IssueDate = certification.IssueDate;
+            model.IssuingOrganization = certification.IssuingOrganization;
+            model.ProfileId = profile.Id;
+            model.LastName = profile.LastName;
+            model.FirstName = profile.FirstName;
+            model.Email = profile.Email;
+
+            return View(model);
         }
 
         // POST: CertificationsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(DeleteModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var result = await this._certificationProfilesProvider.DeleteCertificationAsync(model.ProfileId,
+                    model.CertificationId, default);
+                if (result)
+                    return RedirectToAction("Details", "CertificationProfiles", new { id = model.ProfileId });
+
+
+                ModelState.AddModelError(string.Empty, "Error during deleting certification");
             }
             catch
             {
-                return View();
+                ModelState.AddModelError(string.Empty, "Error during deleting certification");
             }
+            return View();
         }
     }
 }

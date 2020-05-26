@@ -19,7 +19,7 @@ namespace StatefulPatternFunctions.CertificationManager
     public class ShoppingManagement
     {
         [FunctionName("InitializeCertificationProfile")]
-        public async Task<IActionResult> InitializeProfile(
+        public async Task<IActionResult> InitializeProfileAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles")] HttpRequest req,
             [DurableClient] IDurableEntityClient client,
             ILogger logger)
@@ -36,7 +36,7 @@ namespace StatefulPatternFunctions.CertificationManager
         }
 
         [FunctionName("UpdateCertificationProfile")]
-        public async Task<IActionResult> UpdateProfile(
+        public async Task<IActionResult> UpdateProfileAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "profiles/{profileId}")] HttpRequest req,
             Guid profileId,
             [DurableClient] IDurableEntityClient client,
@@ -54,7 +54,7 @@ namespace StatefulPatternFunctions.CertificationManager
         }
 
         [FunctionName("DeleteCertificationProfile")]
-        public async Task<IActionResult> DeleteProfile(
+        public async Task<IActionResult> DeleteProfileAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "profiles/{profileId}")] HttpRequest req,
             Guid profileId,
             [DurableClient] IDurableEntityClient client,
@@ -69,7 +69,7 @@ namespace StatefulPatternFunctions.CertificationManager
         }
 
         [FunctionName("AddCertification")]
-        public async Task<IActionResult> AddCertification(
+        public async Task<IActionResult> AddCertificationAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "profiles/{profileId}/certifications")] HttpRequest req,
             Guid profileId,
             [DurableClient] IDurableEntityClient client,
@@ -87,7 +87,7 @@ namespace StatefulPatternFunctions.CertificationManager
         }
 
         [FunctionName("UpdateCertification")]
-        public async Task<IActionResult> UpdateCertification(
+        public async Task<IActionResult> UpdateCertificationAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "profiles/{profileId}/certifications/{certificationId}")] HttpRequest req,
             Guid profileId,
             Guid certificationId,
@@ -103,11 +103,27 @@ namespace StatefulPatternFunctions.CertificationManager
             await client.SignalEntityAsync(entityId,
                    nameof(CertificationProfileEntity.UpsertCertification), certification);
 
-            return new OkObjectResult($"Certification {certification.Id} update for profile {profileId}");
+            return new OkObjectResult($"Certification {certification.Id} updated for profile {profileId}");
+        }
+
+        [FunctionName("RemoveCertification")]
+        public async Task<IActionResult> RemoveCertificationAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "profiles/{profileId}/certifications/{certificationId}")] HttpRequest req,
+            Guid profileId,
+            Guid certificationId,
+            [DurableClient] IDurableEntityClient client,
+            ILogger logger)
+        {
+             var entityId = new EntityId(nameof(CertificationProfileEntity), profileId.ToString());
+
+            await client.SignalEntityAsync(entityId,
+                   nameof(CertificationProfileEntity.RemoveCertification), certificationId);
+
+            return new OkObjectResult($"Certification {certificationId} removed for profile {profileId}");
         }
 
         [FunctionName("GetCertificationProfiles")]
-        public static async Task<IActionResult> GetProfiles(
+        public static async Task<IActionResult> GetProfilesAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles")] HttpRequest req,
             [DurableClient] IDurableEntityClient client)
         {
@@ -140,7 +156,7 @@ namespace StatefulPatternFunctions.CertificationManager
         }
 
         [FunctionName("GetCertificationProfile")]
-        public static async Task<IActionResult> GetProfile(
+        public static async Task<IActionResult> GetProfileAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles/{profileId}")] HttpRequest req,
             string profileId,
             [DurableClient] IDurableEntityClient client)
