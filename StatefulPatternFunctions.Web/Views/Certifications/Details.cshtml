@@ -1,0 +1,79 @@
+﻿@model StatefulPatternFunctions.Web.Models.Certifications.DetailModel
+
+@{
+    ViewData["Title"] = "Certification Details";
+}
+
+<h1>Certification Detail</h1>
+
+<div>
+    <h4>Profile</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+    </dl>
+    <h4>Certification</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CertificationName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CertificationName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IssuingOrganization)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IssuingOrganization)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CredentialUrl)
+        </dt>
+        <dd class="col-sm-10">
+            @if (!string.IsNullOrWhiteSpace(Model.CredentialUrl))
+            {
+                <a href="@Model.CredentialUrl">Url</a>
+            }
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CredentialId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CredentialId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IssueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IssueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ExpirationDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ExpirationDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { profileId = Model.ProfileId, certificationId = Model.CertificationId }) |
+    @Html.ActionLink("Back to List", "Index", "CertificationProfiles", new { id = Model.ProfileId })
+</div>

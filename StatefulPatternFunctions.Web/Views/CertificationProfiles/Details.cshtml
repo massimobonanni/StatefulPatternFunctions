@@ -47,8 +47,8 @@
                 <tr>
                     <td>@item.Name</td>
                     <td>@item.IssuingOrganization</td>
-                    <td>@item.IssueDate</td>
-                    <td>@item.ExpirationDate</td>
+                    <td>@item.IssueDate.ToString("dd/MM/yyy")</td>
+                    <td>@item.ExpirationDate?.ToString("dd/MM/yyy")</td>
                     <td>
                         @if (!string.IsNullOrWhiteSpace(item.CredentialUrl))
                         {
@@ -57,13 +57,14 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "Edit", "Certifications", new { profileId = Model.Profile.Id, certificationId = item.Id }) |
+                        @Html.ActionLink("Details", "Details", "Certifications", new { profileId = Model.Profile.Id, certificationId = item.Id }) |
                         @Html.ActionLink("Delete", "Delete", "Certifications", new { profileId = Model.Profile.Id, certificationId = item.Id })
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    @Html.ActionLink("Add New Certification", "Create", "Certifications", new { profileId = Model.Profile.Id }, new { @class="offset-sm-1 col-sm-10"})
+    @Html.ActionLink("Add New Certification", "Create", "Certifications", new { profileId = Model.Profile.Id }, new { @class = "offset-sm-1 col-sm-10" })
 </div>
 <br>
 <div>

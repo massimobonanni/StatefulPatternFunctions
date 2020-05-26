@@ -7,10 +7,10 @@
         "isEnabled": true
       }
     }
-  },
-  "extensions": {
-    "durableTask": {
-      "hubName": "StatefulHub"
-    }
   }
+  //"extensions": {
+  //  "durableTask": {
+  //    "hubName": "StatefulHub"
+  //  }
+  //}
 }
