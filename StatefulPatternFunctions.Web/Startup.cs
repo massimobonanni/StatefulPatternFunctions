@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StatefulPatternFunctions.Core.Interfaces;
 using StatefulPatternFunctions.Rest;
+using StatefulPatternFunctions.Web.Services;
 
 namespace StatefulPatternFunctions.Web
 {
@@ -27,6 +28,8 @@ namespace StatefulPatternFunctions.Web
         {
             services.AddHttpClient();
             services.AddHttpClient<ICertificationProfilesProvider, CertificationProfilesRestProvider>();
+
+            services.AddTransient<IProfilesGenerator, ProfilesGenerator>();
 
             services.AddControllersWithViews();
         }
