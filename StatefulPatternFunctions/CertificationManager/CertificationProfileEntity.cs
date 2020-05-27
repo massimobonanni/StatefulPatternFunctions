@@ -97,7 +97,7 @@ namespace StatefulPatternFunctions.CertificationManager
                 return false;
 
             var innerCertification = Certifications.FirstOrDefault(p => p.Id == certificationId);
-            if (innerCertification == null)
+            if (innerCertification != null)
             {
                 throw new Exception("Certification not exist");
             }
