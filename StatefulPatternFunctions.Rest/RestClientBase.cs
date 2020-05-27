@@ -67,11 +67,6 @@ namespace StatefulPatternFunctions.Rest
             return new Uri(url);
         }
 
-        protected virtual HttpClient CreateHttpClient(string apiEndpoint)
-        {
-            this._httpClient.BaseAddress = CreateAPIUri(apiEndpoint);
-            return this._httpClient;
-        }
-
+        
     }
 }

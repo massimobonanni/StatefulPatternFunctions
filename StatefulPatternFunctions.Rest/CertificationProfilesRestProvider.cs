@@ -17,27 +17,28 @@ namespace StatefulPatternFunctions.Rest
             IConfiguration configuration) : base(httpClient, configuration)
         {
         }
-
-        protected override HttpClient CreateHttpClient(string apiEndpoint)
+                
+        protected override Uri CreateAPIUri(string apiEndpoint)
         {
-            HttpClient client;
+            Uri uri;
             if (string.IsNullOrEmpty(apiEndpoint))
             {
-                client = base.CreateHttpClient($"/api/profiles");
+                uri = base.CreateAPIUri($"/api/profiles");
             }
             else
             {
                 if (apiEndpoint.StartsWith("/"))
                     apiEndpoint = apiEndpoint.Remove(0, 1);
-                client = base.CreateHttpClient($"/api/profiles/{apiEndpoint}");
+                uri = base.CreateAPIUri($"/api/profiles/{apiEndpoint}");
             }
-            return client;
+
+            return uri;
         }
 
         public async Task<IEnumerable<CertificationProfilesGetModel>> GetCertificationProfilesAsync(CancellationToken token)
         {
-            var client = CreateHttpClient(null);
-            var response = await client.GetAsync("", token);
+            var uri = this.CreateAPIUri("");
+            var response = await this._httpClient.GetAsync(uri, token);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -55,8 +56,9 @@ namespace StatefulPatternFunctions.Rest
 
         public async Task<CertificationProfileGetModel> GetCertificationProfileAsync(Guid profileId, CancellationToken token)
         {
-            var client = CreateHttpClient($"{profileId}");
-            var response = await client.GetAsync("", token);
+            var uri = this.CreateAPIUri($"{profileId}");
+
+            var response = await this._httpClient.GetAsync(uri, token);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -79,22 +81,22 @@ namespace StatefulPatternFunctions.Rest
             if (profile == null)
                 throw new ArgumentNullException(nameof(profile));
 
-            using (var client = CreateHttpClient(""))
-            {
-                profile.Id = Guid.NewGuid();
+            var uri = this.CreateAPIUri("");
 
-                var profileJson = JsonSerializer.Serialize(profile,
-                  new JsonSerializerOptions
-                  {
-                      PropertyNameCaseInsensitive = true,
-                  });
+            profile.Id = Guid.NewGuid();
 
-                var postContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+            var profileJson = JsonSerializer.Serialize(profile,
+              new JsonSerializerOptions
+              {
+                  PropertyNameCaseInsensitive = true,
+              });
 
-                var response = await client.PostAsync("", postContent, token);
+            var postContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
 
-                return response.IsSuccessStatusCode;
-            }
+            var response = await this._httpClient.PostAsync(uri, postContent, token);
+
+            return response.IsSuccessStatusCode;
+
         }
 
         public async Task<bool> UpdateCertificationProfileAsync(Guid id,
@@ -103,30 +105,27 @@ namespace StatefulPatternFunctions.Rest
             if (profile == null)
                 throw new ArgumentNullException(nameof(profile));
 
-            using (var client = CreateHttpClient($"{id}"))
-            {
-                var profileJson = JsonSerializer.Serialize(profile,
-                       new JsonSerializerOptions
-                       {
-                           PropertyNameCaseInsensitive = true,
-                       });
+            var uri = this.CreateAPIUri($"{id}");
 
-                var putContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+            var profileJson = JsonSerializer.Serialize(profile,
+                   new JsonSerializerOptions
+                   {
+                       PropertyNameCaseInsensitive = true,
+                   });
 
-                var response = await client.PutAsync("", putContent, token);
+            var putContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
 
-                return response.IsSuccessStatusCode;
-            }
+            var response = await this._httpClient.PutAsync(uri, putContent, token);
+
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteCertificationProfileAsync(Guid id, CancellationToken token)
         {
-            using (var client = CreateHttpClient($"{id}"))
-            {
-                var response = await client.DeleteAsync("", token);
+            var uri = this.CreateAPIUri($"{id}");
+            var response = await this._httpClient.DeleteAsync(uri, token);
 
-                return response.IsSuccessStatusCode;
-            }
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> AddCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token)
@@ -134,22 +133,21 @@ namespace StatefulPatternFunctions.Rest
             if (certification == null)
                 throw new ArgumentNullException(nameof(certification));
 
-            using (var client = CreateHttpClient($"{profileId}/certifications"))
-            {
-                certification.Id = Guid.NewGuid();
+            var uri = this.CreateAPIUri($"{profileId}/certifications");
 
-                var profileJson = JsonSerializer.Serialize(certification,
-                      new JsonSerializerOptions
-                      {
-                          PropertyNameCaseInsensitive = true,
-                      });
+            certification.Id = Guid.NewGuid();
 
-                var postContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+            var profileJson = JsonSerializer.Serialize(certification,
+                  new JsonSerializerOptions
+                  {
+                      PropertyNameCaseInsensitive = true,
+                  });
 
-                var response = await client.PostAsync("", postContent, token);
+            var postContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
 
-                return response.IsSuccessStatusCode;
-            }
+            var response = await this._httpClient.PostAsync(uri, postContent, token);
+
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> UpdateCertificationAsync(Guid profileId, CertificationUpsertModel certification, CancellationToken token)
@@ -157,20 +155,20 @@ namespace StatefulPatternFunctions.Rest
             if (certification == null)
                 throw new ArgumentNullException(nameof(certification));
 
-            using (var client = CreateHttpClient($"{profileId}/certifications/{certification.Id}"))
-            {
-                var profileJson = JsonSerializer.Serialize(certification,
-                      new JsonSerializerOptions
-                      {
-                          PropertyNameCaseInsensitive = true,
-                      });
+            var uri = this.CreateAPIUri($"{profileId}/certifications/{certification.Id}");
 
-                var putContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
+            var profileJson = JsonSerializer.Serialize(certification,
+                  new JsonSerializerOptions
+                  {
+                      PropertyNameCaseInsensitive = true,
+                  });
 
-                var response = await client.PutAsync("", putContent, token);
+            var putContent = new StringContent(profileJson, Encoding.UTF8, "application/json");
 
-                return response.IsSuccessStatusCode;
-            }
+            var response = await this._httpClient.PutAsync(uri, putContent, token);
+
+            return response.IsSuccessStatusCode;
+
         }
     }
 }
