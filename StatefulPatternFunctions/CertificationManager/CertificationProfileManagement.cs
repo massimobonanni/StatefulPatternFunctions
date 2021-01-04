@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace StatefulPatternFunctions.CertificationManager
 {
-    public class ShoppingManagement
+    public class CertificationProfileManagement
     {
         [FunctionName("InitializeCertificationProfile")]
         public async Task<IActionResult> InitializeProfile(

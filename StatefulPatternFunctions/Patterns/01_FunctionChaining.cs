@@ -14,7 +14,8 @@ namespace StatefulPatternFunctions.Patterns
     public static class FunctionChaining
     {
         [FunctionName("FunctionsChainingOrchestrator")]
-        public static async Task<int> RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
+        public static async Task<int> RunOrchestrator(
+            [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             try
             {
