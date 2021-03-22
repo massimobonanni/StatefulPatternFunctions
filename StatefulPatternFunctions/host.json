@@ -10,7 +10,8 @@
   },
   "extensions": {
     "durableTask": {
-      "hubName": "StatefulHub"
+      "hubName": "StatefulENHub",
+      "TesthubName": "TestHub"
     }
   }
 }
